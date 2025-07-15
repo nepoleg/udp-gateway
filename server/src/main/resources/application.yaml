@@ -1,0 +1,7 @@
+
+udp-gateway:
+  channels:
+    - name: Channel 1
+      address: 127.0.0.1:12345
+    - name: Channel 2
+      address: 127.0.0.1:12346
