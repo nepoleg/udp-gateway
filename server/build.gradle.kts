@@ -6,6 +6,16 @@ plugins {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation(libs.agrona)
+    implementation(libs.log4j.api)
+    implementation(libs.log4j.core)
+    implementation(project(":utilities"))
+}
+
+configurations {
+    all {
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+    }
 }
 
 application {
