@@ -1,6 +1,7 @@
-package com.github.nepoleg.udpgateway.server.receive;
+package com.github.nepoleg.udpgateway.server.udp.receive;
 
-import com.github.nepoleg.udpgateway.server.receive.UdpChannel.State;
+import com.github.nepoleg.udpgateway.server.udp.receive.UdpChannel.State;
+import com.github.nepoleg.udpgateway.server.udp.receive.processor.Processor;
 import com.github.nepoleg.utilities.NetworkHelper;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -12,12 +13,8 @@ import java.util.List;
 import org.agrona.LangUtil;
 import org.agrona.concurrent.Agent;
 import org.agrona.nio.TransportPoller;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class UdpAgent extends TransportPoller implements Agent {
-
-  private static final Logger log = LogManager.getLogger();
 
   private final String localInterface;
   private final ByteBuffer buffer;
@@ -83,10 +80,10 @@ public class UdpAgent extends TransportPoller implements Agent {
 
   private int read(UdpChannel channel, long now) {
     buffer.clear();
-    var remoteAddr = channel.read(now, buffer);
-    if (remoteAddr != null) {
+    var sourceAddress = channel.read(now, buffer);
+    if (sourceAddress != null) {
       buffer.flip();
-      processor.receive(buffer);
+      processor.process(sourceAddress, channel.getGroupAddress(), buffer);
       return 1;
     }
     return 0;

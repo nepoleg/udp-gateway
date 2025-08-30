@@ -1,4 +1,4 @@
-package com.github.nepoleg.udpgateway.server.agent;
+package com.github.nepoleg.udpgateway.server.udp.agent;
 
 import org.agrona.concurrent.Agent;
 import org.agrona.concurrent.AgentRunner;

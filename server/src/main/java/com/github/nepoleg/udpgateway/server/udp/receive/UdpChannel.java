@@ -1,4 +1,4 @@
-package com.github.nepoleg.udpgateway.server.receive;
+package com.github.nepoleg.udpgateway.server.udp.receive;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,7 +20,7 @@ public class UdpChannel {
   private static final Logger log = LogManager.getLogger();
 
   private final Selector selector;
-  private final InetSocketAddress address;
+  private final InetSocketAddress groupAddress;
   private final long timeout;
   private DatagramChannel datagramChannel;
   private State state = State.NEW;
@@ -32,15 +32,15 @@ public class UdpChannel {
   private MembershipKey groupKey;
   private SelectionKey selectionKey;
 
-  public UdpChannel(Selector selector, InetSocketAddress address,
+  public UdpChannel(Selector selector, InetSocketAddress groupAddress,
       long timeout) {
     this.selector = selector;
-    this.address = address;
+    this.groupAddress = groupAddress;
     this.timeout = timeout;
   }
 
   private void open() throws IOException {
-    log.info("Opening UDP channel {}, local interface {}", address, nif);
+    log.info("Opening UDP channel {}, local interface {}", groupAddress, nif);
     close();
     datagramChannel = DatagramChannel
         .open(StandardProtocolFamily.INET)
@@ -53,11 +53,11 @@ public class UdpChannel {
 
   public void init(NetworkInterface nif){
     try {
-      group = InetAddress.getByName(address.getHostName());
-      port = new InetSocketAddress(address.getPort());
+      group = InetAddress.getByName(groupAddress.getHostName());
+      port = new InetSocketAddress(groupAddress.getPort());
       this.nif = nif;
     } catch (Exception e) {
-      log.error("Error creating UDP channel {}" , address, e);
+      log.error("Error creating UDP channel {}" , groupAddress, e);
       LangUtil.rethrowUnchecked(e);
     }
   }
@@ -72,7 +72,7 @@ public class UdpChannel {
           open();
           state = State.OPEN;
         } catch (IOException e) {
-          log.error("Error opening selector for channel {}. Retry in {} ms.", address, timeout, e);
+          log.error("Error opening selector for channel {}. Retry in {} ms.", groupAddress, timeout, e);
         }
         timeoutTime = time + timeout;
       }
@@ -97,11 +97,11 @@ public class UdpChannel {
     }
 
     try {
-      var addr = datagramChannel.receive(buffer);
+      var sourceAddress = datagramChannel.receive(buffer);
       timeoutTime = now + timeout;
-      return addr;
+      return sourceAddress;
     } catch (IOException e) {
-      log.error("Error reading from channel {}", address, e);
+      log.error("Error reading from channel {}", groupAddress, e);
     }
     return null;
   }
@@ -125,7 +125,11 @@ public class UdpChannel {
 
   }
 
-  enum State {
+  public InetSocketAddress getGroupAddress() {
+    return groupAddress;
+  }
+
+  public enum State {
     NEW, OPEN, READ
   }
 }

@@ -5,6 +5,9 @@ agrona = { module = "org.agrona:agrona", version = "1.18.2" } #TransportPoller w
 log4j-core = { module="org.apache.logging.log4j:log4j-core", version = "2.25.1" }
 log4j-api = { module="org.apache.logging.log4j:log4j-api", version = "2.25.1" }
 pico-cli = { module="info.picocli:picocli", version = "4.7.7" }
+netty-all = {module = "io.netty:netty-all", version = "4.2.4.Final" }
+netty-handler = {module = "io.netty:netty-handler", version = "4.2.4.Final" }
+netty-transport = {module = "io.netty:netty-transport", version = "4.2.4.Final" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version = "3.3.0" }

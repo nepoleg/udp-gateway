@@ -9,7 +9,8 @@ dependencies {
     implementation(libs.agrona)
     implementation(libs.log4j.api)
     implementation(libs.log4j.core)
-    implementation(project(":utilities"))
+    implementation(libs.netty.all)
+    implementation(project(":common"))
 }
 
 configurations {

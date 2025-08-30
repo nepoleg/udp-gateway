@@ -8,4 +8,6 @@ plugins {
 
 dependencies {
     implementation(libs.log4j.api)
+    implementation(libs.netty.transport)
+    implementation(libs.netty.handler)
 }

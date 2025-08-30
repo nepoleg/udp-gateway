@@ -1,5 +1,7 @@
-package com.github.nepoleg.udpgateway.server.receive;
+package com.github.nepoleg.udpgateway.server.udp.receive.processor;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,7 +14,7 @@ public class PrintingProcessor implements Processor {
   private final byte[] bytes = new byte[BUFFER_SIZE];
 
   @Override
-  public void receive(ByteBuffer buffer) {
+  public void process(SocketAddress sourceAddress, InetSocketAddress groupAddress, ByteBuffer buffer) {
     int remaining = buffer.remaining();
     int len = Math.min(remaining, bytes.length);
     buffer.get(bytes, 0, len);

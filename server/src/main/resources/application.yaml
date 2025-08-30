@@ -8,3 +8,6 @@ udp-gateway:
         host: 224.0.28.146
         port: 15360
     local-interface: ethernet_32777
+  listen:
+    host: localhost
+    port: 1234

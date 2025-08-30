@@ -11,7 +11,7 @@ dependencies {
     implementation(libs.pico.cli)
     implementation(libs.log4j.api)
     implementation(libs.log4j.core)
-    implementation(project(":utilities"))
+    implementation(project(":common"))
 }
 
 java {
