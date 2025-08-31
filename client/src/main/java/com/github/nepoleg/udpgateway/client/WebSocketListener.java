@@ -4,7 +4,6 @@ import com.github.nepoleg.api.PacketSerializer;
 import java.io.IOException;
 import java.net.http.WebSocket;
 import java.net.http.WebSocket.Listener;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
@@ -39,8 +38,6 @@ public class WebSocketListener implements Listener {
         processor.process(packet);
         buffer.clear();
       } catch (IOException e) {
-        log.error("Error deserializing", e);
-      } catch (BufferUnderflowException e) {
         log.error("Error deserializing", e);
       }
     }
