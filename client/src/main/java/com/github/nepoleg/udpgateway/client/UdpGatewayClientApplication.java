@@ -1,6 +1,9 @@
 package com.github.nepoleg.udpgateway.client;
 
+import com.github.nepoleg.utilities.NetworkHelper;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.Callable;
@@ -17,17 +20,29 @@ public class UdpGatewayClientApplication implements Callable<Integer> {
   private static final Logger log = LogManager.getLogger();
 
   @Option(names = {"--connect", "-c"})
-  String serverAddress;
+  String serverUrl;
 
   @Option(names = {"--proxy", "-p"}, arity = "0..1")
   String proxyAddress;
 
+  @Option(names = {"--iface", "-i"}, arity = "0..1")
+  String localInterfaceAddress;
+
+
   @Override
   public Integer call() {
     try {
-      checkAddress(serverAddress);
+      checkUrl(serverUrl);
       var proxyAddr = parseAddress(proxyAddress);
-      var client = new UdpGatewayClient(serverAddress, proxyAddr);
+      NetworkInterface nif = null;
+      if (localInterfaceAddress != null) {
+        nif = NetworkInterface.getByInetAddress(InetAddress.getByName(localInterfaceAddress));
+        if (nif == null) {
+          log.info("Could not find local interface for {}", localInterfaceAddress);
+          NetworkHelper.printAvailableInterfaces();
+        }
+      }
+      var client = new UdpGatewayClient(serverUrl, proxyAddr, nif);
       client.connect();
       return 0;
     } catch (Exception e) {
@@ -36,7 +51,7 @@ public class UdpGatewayClientApplication implements Callable<Integer> {
     }
   }
 
-  private void checkAddress(String serverAddress) throws URISyntaxException {
+  private void checkUrl(String serverAddress) throws URISyntaxException {
     if (serverAddress == null || serverAddress.isEmpty()) {
       throw new IllegalArgumentException("Server address must not be empty");
     }
