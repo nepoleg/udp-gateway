@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LoggingErrorHandler extends ChannelInboundHandlerAdapter {
-  private final static Logger LOG = LogManager.getLogger(LoggingErrorHandler.class);
+  private final static Logger LOG = LogManager.getLogger();
 
   @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

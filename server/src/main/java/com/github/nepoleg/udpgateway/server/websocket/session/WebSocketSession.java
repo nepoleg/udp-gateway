@@ -1,6 +1,6 @@
 package com.github.nepoleg.udpgateway.server.websocket.session;
 
-import com.github.nepoleg.ForwardedPacketSerializer;
+import com.github.nepoleg.api.PacketSerializer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import java.net.InetSocketAddress;
@@ -33,7 +33,7 @@ public class WebSocketSession { //todo: recycle
       LOG.warn("Error sending: channel is not active {}", context.channel().remoteAddress());
     }
     var buf = channel.alloc().buffer();
-    ForwardedPacketSerializer.serialize(sourceAddress, groupAddress, data, buf);
+    PacketSerializer.serialize(sourceAddress, groupAddress, data, buf);
     channel.writeAndFlush(new BinaryWebSocketFrame(buf));
     data.flip();
   }
