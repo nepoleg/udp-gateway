@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = "udp-gateway"
-include("server", "tools", "common")
+include("server", "tools", "common", "client")

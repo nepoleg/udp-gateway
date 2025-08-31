@@ -17,8 +17,12 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class WebSocketServer {
+  private final static Logger LOG = LogManager.getLogger();
+
   private final String host;
   private final int port;
   private final Supplier<WebSocketSession> sessionSupplier;
@@ -30,7 +34,19 @@ public class WebSocketServer {
     this.sessionSupplier = sessionSupplier;
   }
 
-  public void start() throws Exception {
+  public void start() {
+    var thread = new Thread(() -> {
+      try {
+        listen();
+      } catch (Exception e) {
+        LOG.error("Error starting Websocket Server ", e);
+      }
+    });
+    thread.setName("WebSocketServer");
+    thread.start();
+  }
+
+  private void listen() throws Exception {
     var bossGroup = new NioEventLoopGroup(1);
     var workerGroup = new NioEventLoopGroup(1);
     try {
