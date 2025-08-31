@@ -6,7 +6,6 @@ public record Packet(
     InetAddress sourceAddress,
     InetAddress groupAddress,
     int port,
-    byte[] message
+    byte[] payload
 ) {
-
 }

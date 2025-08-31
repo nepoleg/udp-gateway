@@ -4,6 +4,7 @@ import com.github.nepoleg.api.PacketSerializer;
 import java.io.IOException;
 import java.net.http.WebSocket;
 import java.net.http.WebSocket.Listener;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
@@ -13,9 +14,12 @@ import org.apache.logging.log4j.Logger;
 public class WebSocketListener implements Listener {
   private static final Logger log = LogManager.getLogger();
   private final CountDownLatch latch;
+  private final MulticastingPacketProcessor processor;
+  private final ByteBuffer buffer = ByteBuffer.allocateDirect(1024*1024);
 
-  public WebSocketListener(CountDownLatch latch) {
+  public WebSocketListener(CountDownLatch latch, MulticastingPacketProcessor processor) {
     this.latch = latch;
+    this.processor = processor;
   }
 
   @Override
@@ -26,11 +30,19 @@ public class WebSocketListener implements Listener {
 
   @Override
   public CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
-    try {
-      var packet = PacketSerializer.deserialize(data);
-      log.info("WebSocket binary message received: {}", packet);
-    } catch (IOException e) {
-      log.error("Error deserializing", e);
+    buffer.put(data);
+    if (last) {
+      try {
+        buffer.flip();
+        var packet = PacketSerializer.deserialize(buffer);
+        log.info("WebSocket binary message received: {}", packet);
+        processor.process(packet);
+        buffer.clear();
+      } catch (IOException e) {
+        log.error("Error deserializing", e);
+      } catch (BufferUnderflowException e) {
+        log.error("Error deserializing", e);
+      }
     }
     return Listener.super.onBinary(webSocket, data, last);
   }
