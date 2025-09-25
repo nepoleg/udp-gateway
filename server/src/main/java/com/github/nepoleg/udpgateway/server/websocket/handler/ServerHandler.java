@@ -3,7 +3,10 @@ package com.github.nepoleg.udpgateway.server.websocket.handler;
 import com.github.nepoleg.udpgateway.server.websocket.session.WebSocketSession;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import java.util.function.Supplier;
 import org.apache.logging.log4j.LogManager;
@@ -24,6 +27,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
       LOG.info("Handshake complete for {}", ctx.channel().remoteAddress());
       session = sessionSupplier.get();
       session.connected(ctx);
+    }
+    if (evt instanceof IdleStateEvent e) {
+      if (e.state() == IdleState.READER_IDLE) {
+        LOG.info("Closing Idle channel {}", ctx.channel().remoteAddress());
+        ctx.close();
+      } else if (e.state() == IdleState.WRITER_IDLE) {
+        ctx.writeAndFlush(new PingWebSocketFrame());
+      }
     }
   }
 

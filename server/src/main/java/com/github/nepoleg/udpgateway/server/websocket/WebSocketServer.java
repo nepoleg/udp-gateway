@@ -57,9 +57,9 @@ public class WebSocketServer {
             @Override
             public void initChannel(SocketChannel ch) {
               ch.pipeline().addLast(
+                  new IdleStateHandler(30, 10, 0, TimeUnit.SECONDS),
                   new HttpServerCodec(),
                   new WebSocketServerProtocolHandler(Constants.WEBSOCKET_PATH),
-                  new IdleStateHandler(30, 10, 0, TimeUnit.SECONDS),
                   new ServerHandler(sessionSupplier),
                   new LoggingErrorHandler()
               );

@@ -43,9 +43,12 @@ public class UdpGatewayClientApplication implements Callable<Integer> {
         }
       }
       var client = new UdpGatewayClient(serverUrl, proxyAddr, nif);
-      client.connect();
+      while (!Thread.currentThread().isInterrupted()) {
+        client.connect();
+        Thread.sleep(10000);
+      }
       return 0;
-    } catch (Exception e) {
+    } catch (Throwable e) {
       log.error(e.getMessage(), e);
       return 1;
     }
