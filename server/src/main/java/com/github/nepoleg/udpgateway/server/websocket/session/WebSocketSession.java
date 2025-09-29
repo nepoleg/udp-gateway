@@ -1,6 +1,7 @@
 package com.github.nepoleg.udpgateway.server.websocket.session;
 
 import com.github.nepoleg.api.PacketSerializer;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import java.net.InetSocketAddress;
@@ -27,14 +28,14 @@ public class WebSocketSession { //todo: recycle
     registry.unsubscribe(this);
   }
 
-  public void send(SocketAddress sourceAddress, InetSocketAddress groupAddress, ByteBuffer data) {
+  public void send(SocketAddress sourceAddress, InetSocketAddress groupAddress, ByteBuf data) {
     var channel = context.channel();
     if (!channel.isActive()) {
       LOG.warn("Error sending: channel is not active {}", context.channel().remoteAddress());
+      return;
     }
     var buf = channel.alloc().buffer();
-    PacketSerializer.serialize(sourceAddress, groupAddress, data, buf);
+    PacketSerializer.serialize(sourceAddress, groupAddress, data, buf); //todo: calculate the message once for all the sessions
     channel.writeAndFlush(new BinaryWebSocketFrame(buf));
-    data.flip();
   }
 }

@@ -1,5 +1,6 @@
 package com.github.nepoleg.udpgateway.server.websocket.session;
 
+import io.netty.buffer.ByteBuf;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -19,9 +20,10 @@ public class WebSocketSessionRegistry {
     activeSessions.remove(session);
   }
 
-  public void send(SocketAddress sourceAddress, InetSocketAddress groupAddress, ByteBuffer buffer) {
+  public void send(SocketAddress sourceAddress, InetSocketAddress groupAddress, ByteBuf buffer) {
     for (WebSocketSession activeSession : activeSessions) {
       activeSession.send(sourceAddress, groupAddress, buffer);
+      buffer.resetReaderIndex();
     }
   }
 }

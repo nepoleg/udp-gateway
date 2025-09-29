@@ -1,13 +1,10 @@
 package com.github.nepoleg.udpgateway.server.config;
 
-import com.github.nepoleg.udpgateway.server.config.UdpGatewayServerProperties.ReceiverProperties;
-import com.github.nepoleg.udpgateway.server.udp.agent.ServerAgentRunner;
-import com.github.nepoleg.udpgateway.server.udp.receive.UdpAgent;
+import com.github.nepoleg.udpgateway.server.udp.netty.MulticastUdpClient;
 import com.github.nepoleg.udpgateway.server.udp.receive.processor.Processor;
 import com.github.nepoleg.udpgateway.server.udp.receive.processor.WebSocketSender;
 import com.github.nepoleg.udpgateway.server.websocket.WebSocketServer;
 import com.github.nepoleg.udpgateway.server.websocket.session.WebSocketSessionRegistry;
-import java.net.InetSocketAddress;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,20 +23,6 @@ public class ServerConfiguration {
   }
 
   @Bean
-  public UdpAgent udpAgent(Processor processor) {
-    ReceiverProperties receiverProperties = serverProperties.receiver();
-    var remoteAddresses = receiverProperties.channels().stream()
-        .map(ch -> new InetSocketAddress(ch.host(), ch.port())).toList();
-    return new UdpAgent(remoteAddresses, receiverProperties.localInterface(), receiverProperties.bufferSize(),
-        receiverProperties.timeout().toMillis(), processor);
-  }
-
-  @Bean(initMethod = "start")
-  public ServerAgentRunner udpChannelsAgentRunner(UdpAgent udpAgent) {
-    return new ServerAgentRunner(udpAgent);
-  }
-
-  @Bean
   public WebSocketSessionRegistry sessionRegistry() {
     return new WebSocketSessionRegistry();
   }
@@ -50,4 +33,8 @@ public class ServerConfiguration {
         sessionRegistry()::create);
   }
 
+  @Bean(initMethod = "start", destroyMethod = "shutdown")
+  public MulticastUdpClient udpChannelsListener() {
+    return new MulticastUdpClient(serverProperties.receiver(), processor());
+  }
 }
