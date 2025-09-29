@@ -22,7 +22,7 @@ public class PacketSerializer {
   }
 
   public static void serialize(SocketAddress sourceAddress, InetSocketAddress groupAddress,
-      ByteBuffer data, ByteBuf buf) {
+      ByteBuf data, ByteBuf buf) {
     if (sourceAddress instanceof InetSocketAddress sourceIp) {
       writeAddress(buf, sourceIp);
     } else {

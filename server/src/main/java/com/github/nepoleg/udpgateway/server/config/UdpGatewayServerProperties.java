@@ -15,6 +15,7 @@ public record UdpGatewayServerProperties(
   public record ReceiverProperties(List<Address> channels,
                                    String localInterface,
                                    @DefaultValue("65546") int bufferSize,
+                                   @DefaultValue("1") int threadsCount,
                                    @DefaultValue("1m") @DurationUnit(ChronoUnit.MILLIS) Duration timeout
                          ) {}
   public record Address (

@@ -8,6 +8,8 @@ udp-gateway:
         host: 224.0.28.146
         port: 15360
     local-interface: ethernet_32777
+    threads-count: 1
+    timeout: 10s
   listen:
     host: localhost
     port: 1234
