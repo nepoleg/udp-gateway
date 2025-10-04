@@ -20,6 +20,9 @@ import java.util.function.Supplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static io.netty.channel.ChannelOption.SO_REUSEADDR;
+import static io.netty.channel.ChannelOption.SO_SNDBUF;
+
 public class WebSocketServer {
   private final static Logger LOG = LogManager.getLogger();
 
@@ -27,10 +30,12 @@ public class WebSocketServer {
   private final int port;
   private final Supplier<WebSocketSession> sessionSupplier;
   private volatile Channel channel;
+  private final int bufferSize;
 
-  public WebSocketServer(String host, int port, Supplier<WebSocketSession> sessionSupplier) {
+  public WebSocketServer(String host, int port, int bufferSize, Supplier<WebSocketSession> sessionSupplier) {
     this.host = host;
     this.port = port;
+    this.bufferSize = bufferSize;
     this.sessionSupplier = sessionSupplier;
   }
 
@@ -66,7 +71,9 @@ public class WebSocketServer {
             }
           })
           .option(ChannelOption.SO_BACKLOG, 128)
-          .childOption(ChannelOption.TCP_NODELAY, true);
+          .option(SO_REUSEADDR, true)
+          .childOption(ChannelOption.TCP_NODELAY, true)
+          .childOption(SO_SNDBUF, bufferSize);
 
       ChannelFuture f = b.bind(host, port).sync();
       channel = f.channel();

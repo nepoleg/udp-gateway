@@ -29,7 +29,7 @@ public class ServerConfiguration {
 
   @Bean(initMethod = "start")
   public WebSocketServer webSocketServer() {
-    return new WebSocketServer(serverProperties.listen().host(), serverProperties.listen().port(),
+    return new WebSocketServer(serverProperties.server().host(), serverProperties.server().port(), serverProperties.server().bufferSize(),
         sessionRegistry()::create);
   }
 
