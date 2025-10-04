@@ -24,6 +24,8 @@ public class UdpSender implements Callable<Integer> {
   @Option(names = {"--interface", "-i"}, arity = "1")
   String interfaceName;
 
+  @Option(names = { "--rate", "-r"}, arity = "1", defaultValue = "1" , description = "Packet rate in packets per second")
+  int rate;
 
   @Override
   public Integer call() {
@@ -45,7 +47,7 @@ public class UdpSender implements Callable<Integer> {
 
       while (true) {
         senderChannels.forEach(SenderChannel::send);
-        Thread.sleep(1000);
+        Thread.sleep(1000/ rate);
       }
     } catch (Exception e) {
       log.error("Unexpected exception", e);

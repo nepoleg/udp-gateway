@@ -10,11 +10,11 @@ import org.springframework.boot.convert.DurationUnit;
 @ConfigurationProperties(prefix = "udp-gateway")
 public record UdpGatewayServerProperties(
     ReceiverProperties receiver,
-    ListenProperties listen
+    ListenProperties server
 ) {
   public record ReceiverProperties(List<Address> channels,
                                    String localInterface,
-                                   @DefaultValue("65546") int bufferSize,
+                                   @DefaultValue("65536") int bufferSize,
                                    @DefaultValue("1") int threadsCount,
                                    @DefaultValue("1m") @DurationUnit(ChronoUnit.MILLIS) Duration timeout
                          ) {}
@@ -26,6 +26,7 @@ public record UdpGatewayServerProperties(
 
   public record ListenProperties (
       String host,
-      int port
+      int port,
+      @DefaultValue("65536") int bufferSize
   ) {}
 }

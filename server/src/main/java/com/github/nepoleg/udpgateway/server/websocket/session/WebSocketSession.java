@@ -34,6 +34,11 @@ public class WebSocketSession { //todo: recycle
       LOG.warn("Error sending: channel is not active {}", context.channel().remoteAddress());
       return;
     }
+    if (!channel.isWritable()) {
+      LOG.debug("Slow consumer detected. Skipping message {}", context.channel().remoteAddress());
+      return;
+    }
+
     var buf = channel.alloc().buffer();
     PacketSerializer.serialize(sourceAddress, groupAddress, data, buf); //todo: calculate the message once for all the sessions
     channel.writeAndFlush(new BinaryWebSocketFrame(buf));
