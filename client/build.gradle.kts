@@ -1,5 +1,6 @@
 plugins {
     id("buildlogic.java-application-conventions")
+    id("application")
 }
 
 dependencies {

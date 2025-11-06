@@ -60,7 +60,7 @@ public class WebSocketListener implements Listener {
       try {
         buffer.flip();
         var packet = PacketSerializer.deserialize(buffer);
-        log.info("WebSocket binary message received for {}: {}", packet.groupAddress(), new String(packet.payload()));
+        log.debug("WebSocket binary message received for {}: {}", packet.groupAddress(), new String(packet.payload()));
         processor.process(packet);
         buffer.clear();
       } catch (IOException e) {

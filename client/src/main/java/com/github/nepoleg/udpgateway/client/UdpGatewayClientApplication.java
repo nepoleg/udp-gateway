@@ -36,10 +36,10 @@ public class UdpGatewayClientApplication implements Callable<Integer> {
       var proxyAddr = parseAddress(proxyAddress);
       NetworkInterface nif = null;
       if (localInterfaceAddress != null) {
-        nif = NetworkInterface.getByInetAddress(InetAddress.getByName(localInterfaceAddress));
+        nif = NetworkHelper.getNetworkInterface(localInterfaceAddress);
         if (nif == null) {
           log.info("Could not find local interface for {}", localInterfaceAddress);
-          NetworkHelper.printAvailableInterfaces();
+          return 1;
         }
       }
       var client = new UdpGatewayClient(serverUrl, proxyAddr, nif);

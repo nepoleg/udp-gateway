@@ -36,10 +36,8 @@ public class UdpSender implements Callable<Integer> {
 
     List<SenderChannel> senderChannels = null;
     try {
-      NetworkInterface iface = NetworkInterface.getByName(interfaceName);
+      NetworkInterface iface = NetworkHelper.getNetworkInterface(interfaceName);
       if (iface == null) {
-        log.info("Could not find interface " + interfaceName);
-        NetworkHelper.printAvailableInterfaces();
         return 1;
       }
       senderChannels = address.stream().map(addr -> new SenderChannel(addr, iface)).toList();

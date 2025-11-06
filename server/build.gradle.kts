@@ -2,6 +2,7 @@ plugins {
     id("buildlogic.java-application-conventions")
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
+    id("application")
 }
 
 dependencies {

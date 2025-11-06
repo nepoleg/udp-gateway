@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +30,11 @@ public class MulticastUdpClient {
 
     NetworkInterface nif;
     try {
-      nif = NetworkInterface.getByName(properties.localInterface());
+      nif = NetworkHelper.getNetworkInterface(properties.localInterface());
       if (nif == null) {
-        NetworkHelper.printAvailableInterfaces();
         throw new IllegalStateException("Interface " + properties.localInterface() + " not found");
       }
-    } catch (SocketException e) {
+    } catch (SocketException|UnknownHostException e) {
       throw new RuntimeException(e);
     }
 

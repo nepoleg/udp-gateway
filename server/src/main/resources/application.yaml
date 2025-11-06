@@ -1,15 +1,95 @@
 udp-gateway:
   receiver:
     channels:
-      - name: 360IA
-        host: 224.0.28.19
-        port: 14360
-      - name: 360IB
-        host: 224.0.28.146
-        port: 15360
-    local-interface: ethernet_32777
+      - name: CH16-BBBO-RT-A
+        host: 224.0.212.246
+        port: 50246
+      - name: CH16-BBBO-RT-B
+        host: 224.0.213.246
+        port: 50246
+
+      - name: CH16-BBBO-SN-A
+        host: 224.0.212.246
+        port: 60246
+      - name: CH16-BBBO-SN-B
+        host: 224.0.213.246
+        port: 60246
+
+      - name: CH16-FBMU-RT-A
+        host: 224.0.212.249
+        port: 50249
+      - name: CH16-BBBO-RT-B
+        host: 224.0.213.249
+        port: 50249
+
+      - name: CH16-FBMU-SN-A
+        host: 224.0.212.248
+        port: 60248
+      - name: CH16-BBBO-SN-B
+        host: 224.0.213.248
+        port: 60248
+
+      - name: CH16-REFT-RT-A
+        host: 224.0.212.245
+        port: 50245
+      - name: CH16-BBBO-RT-B
+        host: 224.0.213.245
+        port: 50245
+
+      - name: CH16-REFT-SN-A
+        host: 224.0.212.245
+        port: 60245
+      - name: CH16-REFT-SN-B
+        host: 224.0.213.245
+        port: 60245
+
+#        Channel Set #38
+
+      - name: CH38-BBBO-RT-A
+        host: 224.0.212.212
+        port: 50212
+      - name: CH38-BBBO-RT-B
+        host: 224.0.213.212
+        port: 50212
+
+      - name: CH38-BBBO-SN-A
+        host: 224.0.212.212
+        port: 60212
+      - name: CH38-BBBO-SN-B
+        host: 224.0.213.212
+        port: 60212
+
+      - name: CH38-FBMU-RT-A
+        host: 224.0.212.214
+        port: 50214
+      - name: CH38-BBBO-RT-B
+        host: 224.0.213.214
+        port: 50214
+
+      - name: CH38-FBMU-SN-A
+        host: 224.0.212.214
+        port: 60214
+      - name: CH38-BBBO-SN-B
+        host: 224.0.213.214
+        port: 60214
+
+      - name: CH38-REFT-RT-A
+        host: 224.0.212.211
+        port: 50211
+      - name: CH38-BBBO-RT-B
+        host: 224.0.213.211
+        port: 50211
+
+      - name: CH38-REFT-SN-A
+        host: 224.0.212.211
+        port: 60211
+      - name: CH38-REFT-SN-B
+        host: 224.0.213.211
+        port: 60211
+
+    local-interface: "10.89.1.33"
     threads-count: 1
     timeout: 10s
-  listen:
-    host: localhost
-    port: 1234
+  server:
+    host: 0.0.0.0
+    port: 7000
