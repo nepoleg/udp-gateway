@@ -6,7 +6,7 @@ import java.net.DatagramPacket;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 
-public class MulticastingPacketProcessor {
+public class MulticastingPacketProcessor implements AutoCloseable {
 
   private final NetworkInterface nif;
   private MulticastSocket socket;
@@ -24,5 +24,11 @@ public class MulticastingPacketProcessor {
   public void process(Packet packet) throws IOException {
     var datagram = new DatagramPacket(packet.payload(), packet.payload().length, packet.groupAddress(), packet.port());
     socket.send(datagram);
+  }
+
+  @Override
+  public void close() {
+    if (socket != null)
+      socket.close();
   }
 }

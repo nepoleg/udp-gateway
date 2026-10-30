@@ -17,23 +17,21 @@ public class UdpGatewayClient {
   private static final Logger log = LogManager.getLogger();
 
   private final String serverAddress;
-  private final InetSocketAddress proxyAddress;
   private final NetworkInterface nif;
-  private final CountDownLatch latch = new CountDownLatch(1);
+  private final HttpClient client;
 
   public UdpGatewayClient(String serverAddress, InetSocketAddress proxyAddress,
       NetworkInterface nif) {
     this.serverAddress = serverAddress;
-    this.proxyAddress = proxyAddress;
     this.nif = nif;
+    this.client = HttpClient.newBuilder()
+        .proxy(proxyAddress != null ? ProxySelector.of(proxyAddress) : ProxySelector.getDefault())
+        .build();
   }
 
   public void connect() throws Throwable {
-    try (HttpClient client = HttpClient.newBuilder()
-          .proxy(proxyAddress != null ? ProxySelector.of(proxyAddress) : ProxySelector.getDefault())
-          .build()
-    ) {
-      var multicastSender = new MulticastingPacketProcessor(nif);
+    var latch = new CountDownLatch(1);
+    try (var multicastSender = new MulticastingPacketProcessor(nif)) {
       multicastSender.init();
       WebSocket ws = client.newWebSocketBuilder()
           .buildAsync(URI.create(serverAddress + Constants.WEBSOCKET_PATH), new WebSocketListener(latch, multicastSender))

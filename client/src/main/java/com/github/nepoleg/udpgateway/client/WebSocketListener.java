@@ -9,7 +9,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +22,6 @@ public class WebSocketListener implements Listener {
   private final MulticastingPacketProcessor processor;
   private final ByteBuffer buffer = ByteBuffer.allocateDirect(1024*1024);
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-  private ScheduledFuture<?> statusFuture;
   private final ByteBuffer pingByteBuffer = ByteBuffer.wrap("Hello".getBytes());
   private long lastMessageTime;
 
@@ -41,10 +39,11 @@ public class WebSocketListener implements Listener {
   }
 
   private void schedulePing(WebSocket webSocket) {
-    statusFuture = executor.scheduleAtFixedRate(() -> {
+    executor.scheduleAtFixedRate(() -> {
       if (lastMessageTime + READ_TIMEOUT < System.currentTimeMillis()) {
-        webSocket.sendClose(1001, "Timeout")
-            .thenRun(webSocket::abort);
+        log.warn("No messages for {} ms. Closing connection", READ_TIMEOUT);
+        webSocket.abort();
+        finish();
         return;
       }
       pingByteBuffer.rewind();
@@ -85,8 +84,7 @@ public class WebSocketListener implements Listener {
   @Override
   public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
     log.info("Websocket closed with statusCode={}, reason={}", statusCode, reason);
-    statusFuture.cancel(true);
-    latch.countDown();
+    finish();
     return Listener.super.onClose(webSocket, statusCode, reason);
   }
 
@@ -94,6 +92,11 @@ public class WebSocketListener implements Listener {
   public void onError(WebSocket webSocket, Throwable error) {
     log.error("WebSocket Error", error);
     Listener.super.onError(webSocket, error);
+    finish();
+  }
+
+  private void finish() {
+    executor.shutdownNow();
     latch.countDown();
   }
 }
